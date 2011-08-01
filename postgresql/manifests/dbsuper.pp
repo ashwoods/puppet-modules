@@ -6,6 +6,7 @@ define postgresql::dbsuper ($role , $password='' , $conntype="host" , $address='
         user    => "${postgresql::params::processuser}",
         unless  => "echo \\\\dg | psql | grep $name 2>/dev/null",
         command => "echo \"create role $name superuser noinherit nologin ; create role $role superuser noinherit login encrypted password '$password'; grant $name to $role; create database $name with owner=$role;\" | /usr/bin/psql",
+        require => Service["postgresql"],
     }
 
     postgresql::hba { "hba_$name":
@@ -17,4 +18,6 @@ define postgresql::dbsuper ($role , $password='' , $conntype="host" , $address='
         method   => $auth_method,
         option   => $auth_options,
     }
+
+
 }
